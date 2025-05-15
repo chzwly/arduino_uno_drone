@@ -7,7 +7,7 @@
 #define PPM_PIN 2
 #define NUMBER_OF_PPM_CHANNELS 6
 
-#define DEBUG
+
 volatile bool ppm_read = false, ppm_sync = false;
 volatile uint32_t current_ppm_clock = 0, last_ppm_clock = 0, ppm_dt = 0;
 volatile uint8_t ppm_current_channel = 0;
