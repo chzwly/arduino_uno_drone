@@ -1,2 +1,5 @@
-# koa2-1
-微博
+arduino uno drone
+
+ppm
+pid
+pin 6 9 10 11 for motors
