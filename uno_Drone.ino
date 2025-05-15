@@ -6,7 +6,7 @@
 // -------------------- PPM CONFIG --------------------
 #define PPM_PIN 2
 #define NUMBER_OF_PPM_CHANNELS 6
-
+#define DEBUG
 
 volatile bool ppm_read = false, ppm_sync = false;
 volatile uint32_t current_ppm_clock = 0, last_ppm_clock = 0, ppm_dt = 0;
@@ -105,12 +105,16 @@ void ppmRising() {
 void initMPU6050() {
   Wire.begin();
   Wire.setClock(400000);  // 400kHz I2C speed
+#ifdef DEBUG
 
   Serial.println(F("Initializing MPU6050..."));
+  #endif
   mpu.initialize();
 
   if (!mpu.testConnection()) {
+    #ifdef DEBUG
     Serial.println(F("MPU6050 connection failed!"));
+    #endif
     while (1);  // Halt if connection fails
   }
 
@@ -131,11 +135,14 @@ void initMPU6050() {
 
     dmpReady = true;
     packetSize = mpu.dmpGetFIFOPacketSize();
+    #ifdef DEBUG
+
     Serial.println(F("DMP ready."));
   } else {
     Serial.print(F("DMP Initialization failed (code "));
     Serial.print(devStatus);
     Serial.println(F(")"));
+    #endif
     while (1);  // Halt on failure
   }
 }
@@ -143,7 +150,9 @@ void initMPU6050() {
 // -------------------- ARM/DISARM --------------------
 void go_arm() {
   f.ARMED = true;
+  #ifdef DEBUG
   Serial.println("ARMED");
+  #endif
 }
 
 void go_disarm() {
@@ -152,7 +161,9 @@ void go_disarm() {
   ESC2.writeMicroseconds(1000);
   ESC3.writeMicroseconds(1000);
   ESC4.writeMicroseconds(1000);
+  #ifdef DEBUG
   Serial.println("DISARMED");
+  #endif
 }
 
 // -------------------- SETUP --------------------
@@ -165,8 +176,9 @@ void setup() {
 
   pinMode(PPM_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PPM_PIN), ppmRising, RISING);
-
+#ifdef DEBUG
   Serial.println(F("Setup complete."));
+  #endif
 }
 
 // -------------------- MAIN LOOP --------------------
@@ -232,12 +244,13 @@ void loop() {
       ESC2.writeMicroseconds(m2);
       ESC3.writeMicroseconds(m3);
       ESC4.writeMicroseconds(m4);
-
+#ifdef DEBUG
       // -------------------- DEBUG OUTPUT --------------------
       Serial.print("Roll Set: "); Serial.print(pidRoll.setpoint);
       Serial.print(" | Roll: "); Serial.print(filteredRoll);
       Serial.print(" | Pitch Set: "); Serial.print(pidPitch.setpoint);
       Serial.print(" | Pitch: "); Serial.println(filteredPitch);
+      #endif
     }
   }
 }
